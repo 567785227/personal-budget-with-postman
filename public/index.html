@@ -9,8 +9,8 @@
     <meta name="keywords" content="HTML,CSS">
     <!-- This is an SEO Change -->
     <title><strong>Personal Budget</strong></title>
-    <link rel="stylesheet" href="/reset.css">
-    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
     
@@ -141,16 +141,7 @@
         datasets: [
           {
             data: [],
-            backgroundColor: [
-            "#F7DC6F",
-          "#ff6384",
-          "#2E4053",
-          "#fd6b19",
-          "#2ECC71",
-          "#F633FF",
-          "#515A5A",
-          "#a38080"
-            ],
+            backgroundColor: [],
           },
         ],
         labels: [],
@@ -193,9 +184,9 @@
 
       var titles = []
       var getTitles = ()=>{
-        axios.get("/budget").then(function (res) {
-            for(var i=0;i<res.data.myBudget.length;i++){
-                titles.push(res.data.myBudget[i].title)
+        axios.get("http://localhost:3000/budget").then(function (res) {
+            for(var i=0;i<res.data.length;i++){
+                titles.push(res.data[i].title)
             }
         })
       }
@@ -204,16 +195,9 @@
       var color = d3.scale
         .ordinal()
         .domain(titles)
-        .range([
-          "#F7DC6F",
-          "#ff6384",
-          "#2E4053",
-          "#fd6b19",
-          "#2ECC71",
-          "#F633FF",
-          "#515A5A",
-          "#a38080"
-        ]);
+        .range(
+          dataSource.datasets[0].backgroundColor
+        );
 
         function createChart() {
         var ctx = document.getElementById("myChart").getContext("2d");
@@ -326,15 +310,14 @@
 
 
       function getBudget() {
-        axios.get("/budget").then(function (res) {
-        //   console.log(res.data.myBudget);
-          for (var i = 0; i < res.data.myBudget.length; i++) {
-            dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
-            dataSource.labels[i] = res.data.myBudget[i].title;
-
+        axios.get("http://localhost:3000/budget").then(function (res) {
+          for (var i = 0; i < res.data.length; i++) {
+            dataSource.datasets[0].data[i] = res.data[i].budget;
+            dataSource.labels[i] = res.data[i].title;
+            dataSource.datasets[0].backgroundColor[i] = res.data[i].color;
             newDataSource.push({
-              "title": res.data.myBudget[i].title,
-              "budget": res.data.myBudget[i].budget,
+              "title": res.data[i].title,
+              "budget": res.data[i].budget,
             });
           }
           createChart();
